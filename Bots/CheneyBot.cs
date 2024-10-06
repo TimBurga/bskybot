@@ -1,11 +1,12 @@
 ﻿using Coravel.Invocable;
 using FishyFlip;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
-using Microsoft.Extensions.Options;
 
 namespace BskyBot.Bots;
 
-public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
+public class CheneyBot(IConfiguration config, ILogger<CheneyBot> logger) : IInvocable
 {
     private List<string> _facts = [
         "who redefined torture as enhanced interrogation techniques",
@@ -19,7 +20,7 @@ public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
         "who continues to insist that torture worked despite the contrary findings of a Senate investigation",
         "who insists that rectal rehydration and feeding of detainees was done for medical reasons despite medical experts saying otherwise",
         "who continues to argue that anything short of causing pain equal to that of organ failure is not torture",
-        "who has no problem with the revelation that 25% of the prisoners who were tortured were found innocent",
+        "who was unmoved by the revelation that 25% of the prisoners who were tortured were found innocent",
         "the architect of some of the most disastrous foreign and domestic policies of the early 21st century",
         "who pushed for a war based on known false premises of weapons of mass destruction and a link between Iraq and Al Qaeda",
         "who is responsible for an estimated half a million or more Iraqi civilian deaths",
@@ -29,6 +30,7 @@ public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
 
     public async Task Invoke()
     {
+        logger.LogInformation("CheneyBot has woken up");
         var session = await CreateSession();
 
         var postText = BuildPostText();
@@ -43,6 +45,7 @@ public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
             },
             error => throw new Exception($"Error: {error.StatusCode} {error.Detail}"));
 
+        logger.LogInformation("CheneyBot going back to sleep");
         session.Dispose();
     }
 
@@ -71,14 +74,16 @@ public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
         var debugLog = new DebugLoggerProvider();
         var atProtocolBuilder = new ATProtocolBuilder()
             .EnableAutoRenewSession(false)
-            .WithInstanceUrl(config.Value.PdsUri)
+            .WithInstanceUrl(config.GetValue<Uri>("CheneyBot_PdsUri"))
             .WithLogger(debugLog.CreateLogger("CheneyBotDebug"));
 
         var atProtocol = atProtocolBuilder.Build();
 
-        var result = await atProtocol.Server.CreateSessionAsync(config.Value.AppUser, config.Value.AppPassword, CancellationToken.None);
+        var result = await atProtocol.Server.CreateSessionAsync(config.GetValue<string>("CheneyBot_AppUser"),
+            config.GetValue<string>("CheneyBot_AppPassword"), CancellationToken.None);
+
         result.Switch(
-            success => Console.WriteLine($"Session: {success.Did}"),
+            success => logger.LogInformation($"Session: {success.Did}"),
             error => throw new Exception($"Error: {error.StatusCode} {error.Detail}")
         );
 

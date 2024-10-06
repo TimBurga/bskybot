@@ -11,15 +11,13 @@ builder.Services.AddScheduler();
 
 builder.Services.AddTransient<CheneyBot>();
 
-builder.Services.Configure<CheneyBotOptions>(builder.Configuration.GetSection("CheneyBot"));
-
 builder.Services.AddLogging(x => x.AddSimpleConsole().SetMinimumLevel(LogLevel.Information));
 
 var app = builder.Build();
 
 app.Services.UseScheduler(scheduler =>
     scheduler.Schedule<CheneyBot>()
-        .DailyAtHour(15));
+        .DailyAtHour(16));
 
 try
 {

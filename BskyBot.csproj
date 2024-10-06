@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Coravel" Version="6.0.0" />
     <PackageReference Include="FishyFlip" Version="1.8.80" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
