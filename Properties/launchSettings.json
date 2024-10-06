@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BskyBot": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

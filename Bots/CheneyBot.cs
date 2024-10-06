@@ -22,16 +22,16 @@ public class CheneyBot(IOptions<CheneyBotOptions> config) : IInvocable
         "who has no problem with the revelation that 25% of the prisoners who were tortured were found innocent",
         "the architect of some of the most disastrous foreign and domestic policies of the early 21st century",
         "who pushed for a war based on known false premises of weapons of mass destruction and a link between Iraq and Al Qaeda",
-        "who is responsible for an estimated half a million Iraqi civilian deaths",
+        "who is responsible for an estimated half a million or more Iraqi civilian deaths",
         "who advocated strongly for the passage of the Patriot Act which granted the government sweeping surveillance powers over US citizens",
         "whose policies eroded civil liberties, violated human rights, destabilised entire regions, and left a legacy of fear, instability, and anger that continues to haunt the world today",
     ];
 
     public async Task Invoke()
     {
-        var postText = BuildPostText();
         var session = await CreateSession();
 
+        var postText = BuildPostText();
 
         var postResult = await session.Repo.CreatePostAsync(postText);
 
