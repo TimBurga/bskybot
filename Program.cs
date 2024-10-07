@@ -1,5 +1,4 @@
-﻿using BskyBot;
-using BskyBot.Bots;
+﻿using BskyBot.Bots;
 using Coravel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,21 +9,22 @@ var builder = Host.CreateApplicationBuilder();
 
 builder.Services.AddScheduler();
 
-builder.Services.AddTransient<CheneyBot>();
+builder.Services.AddCheneyBot();
 
 _ = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", true)
     .AddEnvironmentVariables()
     .Build();
 
-builder.Services.AddLogging(x => x.AddSimpleConsole().SetMinimumLevel(LogLevel.Information));
+builder.Services.AddLogging(builder => builder
+    .AddSimpleConsole(consoleOpts => consoleOpts.TimestampFormat = "HH:mm:ss ")
+    .SetMinimumLevel(LogLevel.Information));
 
 var app = builder.Build();
 
 app.Services.UseScheduler(scheduler =>
     scheduler.Schedule<CheneyBot>()
-        .DailyAtHour(16)
-        .RunOnceAtStart());
+        .DailyAtHour(16));
 
 try
 {
