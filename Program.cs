@@ -24,7 +24,7 @@ var app = builder.Build();
 
 app.Services.UseScheduler(scheduler =>
     scheduler.Schedule<CheneyBot>()
-        .DailyAtHour(16));
+        .DailyAtHour(22));
 
 try
 {
