@@ -20,6 +20,7 @@ public class CheneyFactProvider
         "who is responsible for an estimated half a million or more Iraqi civilian deaths",
         "who advocated strongly for the passage of the Patriot Act which granted the government sweeping surveillance powers over US citizens",
         "whose policies eroded civil liberties, violated human rights, destabilised entire regions, and left a legacy of fear, instability, and anger that continues to haunt the world today",
+        "who outed an undercover CIA officer to the media in retribution for her husband's public opposition to the impending invasion of Iraq"
     ];
 
     public string Random()
