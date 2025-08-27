@@ -1,40 +1,49 @@
 ﻿using Coravel.Invocable;
+using FishyFlip;
 using Microsoft.Extensions.Logging;
 
 namespace BskyBot.Bots;
 
-public class CheneyBot(AtProtoSessionFactory sessionFactory, PulseChecker pulseChecker, CheneyFactProvider factProvider, ILogger<CheneyBot> logger) : IInvocable
+public class CheneyBot(AtProtoSessionFactory atProto, PulseChecker pulseChecker, DeduplicatingFactProvider factProvider, ILogger<CheneyBot> logger) : IInvocable
 {
     public async Task Invoke()
     {
-        logger.LogInformation("CheneyBot has woken up");
+        ATProtocol? session = null;
 
-        var isAlive = await pulseChecker.IsAlive();
-        logger.LogInformation("Alive? " + isAlive);
+        try
+        {
+            logger.LogInformation("CheneyBot has woken up cranky as usual");
 
-        var session = await sessionFactory.CreateSession();
+            var isAlive = await pulseChecker.IsAlive();
+            logger.LogInformation("Alive? " + isAlive);
 
-        var postText = BuildPostText(isAlive);
-        logger.LogInformation("Crafted new post: " + postText);
+            session = await atProto.CreateSession();
 
-        var postResult = await session.Repo.CreatePostAsync(postText);
+            var postText = BuildPostText(isAlive);
+            logger.LogInformation("Crafted new post: " + postText);
 
-        postResult.Switch(
-            success =>
-            {
-                logger.LogInformation($"Success! Post: {success.Uri} {success.Cid}");
-            },
-            error => throw new Exception($"Error: {error.StatusCode} {error.Detail}"));
+            var postResult = await session.Repo.CreatePostAsync(postText);
 
-        logger.LogInformation("CheneyBot snarls and goes back to sleep");
-        session.Dispose();
+            postResult.Switch(
+                success => { logger.LogInformation($"Success! Post: {success.Uri} {success.Cid}"); },
+                error => throw new Exception($"Error: {error.StatusCode} {error.Detail}"));
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical(ex, "Could not post status");
+        }
+        finally
+        {
+            session?.Dispose();
+            logger.LogInformation("CheneyBot snarls and goes back to sleep");
+        }
     }
 
     private string BuildPostText(bool isAlive)
     {
-        var spinMeRightRoundBaby = isAlive ? "remains alive today" : "is burning in hell today";
+        var momentOfTruth = isAlive ? "remains alive today" : "is burning in hell on this glorious day";
 
-        var postText = $"Dick Cheney, {factProvider.Random()}, {spinMeRightRoundBaby}, {DateTime.Today.ToLongDateString()}";
+        var postText = $"Dick Cheney, {factProvider.GetFact()}, {momentOfTruth}, {DateTime.Today.ToLongDateString()}";
 
         if (postText.Length > 300)
         {

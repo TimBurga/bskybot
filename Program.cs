@@ -17,7 +17,7 @@ _ = new ConfigurationBuilder()
     .Build();
 
 builder.Services.AddLogging(builder => builder
-    .AddSimpleConsole(consoleOpts => consoleOpts.TimestampFormat = "HH:mm:ss ")
+    .AddSimpleConsole(consoleOpts => consoleOpts.TimestampFormat = "MM/dd/yyyy HH:mm:ss ")
     .SetMinimumLevel(LogLevel.Information));
 
 var app = builder.Build();
